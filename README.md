@@ -19,5 +19,5 @@ Either way, use with caution, and if any questions or comments reach out on Twit
 
 # Current Overview of Repo:
 
-### basicBrowser:
+### webBrowser:
 Ever wanted to browse websites in assembly? Now you can! This 32 bit NASM x86 assembly browser allows you to download websites directly from their HTML code onto your computer! Want to download a file from a website? You can do that too! Reinvent the wheel in a long convoluted way with this browser! But wait, there's more! Included in this project is also custom built C functions to make your life easier. No need to worry about what printf does, now you can just use the lib4.asm and replace a lot of those pesky C functions with your own and manipulate the stack any which way you want!
