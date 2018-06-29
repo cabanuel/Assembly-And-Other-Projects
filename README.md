@@ -2,7 +2,7 @@
 
 A general repository for projects and other fun pieces of code done while a student, or done on my spare time. 
 
-Mostly focusing on assembly (largely 32 bit but also will include some 64 bit), and projects that I have used to expand my arsenal of knowledge and hhacking knowledge.
+Mostly focusing on assembly (largely 32 bit but also will include some 64 bit), and projects that I have used to expand my arsenal of knowledge and hacking knowledge.
 
 Some projects may include code that is INTENTIONALLY VULNERABLE and will also include a small write up on how to exploit it. 
 
