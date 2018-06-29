@@ -5,9 +5,39 @@
 ; gcc -g -o assn5 -m32 assn5.o dns.o lib4.o
 
 ; ********* AUTHOR'S NOTES:
-; The buffer to recieve from the socket breaks IF i read more than 1 byte at a time. I don't
-; know why, so i just decide to set the recievebuffLen = 1 byte. That means it takes longer
-; on bigger websites, but we arent graded for efficiency! :)
+; This program was done as an assignment for CS 3140 at the Naval Postgraduate
+; School. It utilizes 32-bit NASM x86 assembly to connect to a website of the
+; user's calling, and download the HTML of that website. It does so by 
+; parsing the URL as follows:
+; *****************************************************************************
+; we need to parse the URL into 3 main sections, example:
+; (discard this)    (hostName)      (pathName)         (fileName)
+; http://           www.nps.edu     /CS3140/Eagle/      foo.txt
+;                                  ^----------------------------^
+;                                  This will be called the fullPath
+; *****************************************************************************
+; From the parsed URL of the form http://www.<variable website>.<domain>/<path>/<file>.<ext>
+; this rudimentary browser generates the HTTP GET request, and saves the HTML
+; to a local file named after the <file>.<ext> requested. If the the URL does
+; not include a file, the default of "index.html" will be used instead. 
+; The GET request is of the form:
+;
+; GET / HTTP/1.0\r\n
+; Host: www.<website>.<domain>/<path>/<file>.<ext>\r\n
+; Connection: close\r\n
+; \r\n
+;
+; Static components of the GET message are declared at the bottom in the .data
+; section. These will be used as building blocks to build the GET message. 
+;
+; This program utilizes libc libraries that were created in assembly from 
+; a previous assignment. They are included in lib4.asm and must be compiled
+; and linked for this assignment. Their functionality is described in the lib4.asm
+; file. This program will also utilize dns.o which converts a URL to an IP address.
+; 
+;
+; As part of this assignment, the sockets have to be created, and data has to
+; be transmitted and received through them.  
 
 bits 32         
 section .text   
@@ -35,27 +65,28 @@ endstruc
 ;START MAIN
 main:
 
-	mov 	eax, [esp + 8] 		; else, ebp holds address to argv
-	mov 	esi, [eax + 4]		; address of argv[1] in edi
+    mov     eax, [esp + 8]      ; else, ebp holds address to argv
+    mov     esi, [eax + 4]      ; address of argv[1] in edi
 
-	push  	esi					; push pointer to argv[1]
-	call 	l_strlen			; call l_strlen
-	pop     ebx
+    push    esi                 ; push pointer to argv[1]
+    call    l_strlen            ; call l_strlen
+    pop     ebx
 
 ; *********** The address to argv[1] will be stored in esi throughout the program
 
-    mov 	[length], eax 		; l_strlen's return value 
-    xor		ecx, ecx 		 	; set count to 0		
-copyLoop:
-;copy url
-    cmp     ecx, dword [length] ; check if count is at length
-    je	 	findHostLoopStart			; find hostname when done copying
+    mov     [length], eax       ; l_strlen's return value 
+    xor     ecx, ecx            ; set count to 0        
 
-    mov 	al, byte [esi + ecx]		; al has the char 
-    mov 	byte [longURL + ecx], al 	; char being moved to longURL 
+copyLoop: 
+;copy url in its entirety
+    cmp      ecx, dword [length]    ; check if count is at length
+    je      findHostLoopStart       ; find hostname when done copying
 
-    inc 	ecx					; increment counter 
-    jmp 	copyLoop 			; continue with chars 
+    mov     al, byte [esi + ecx]        ; al has the char 
+    mov     byte [longURL + ecx], al    ; char being moved to longURL 
+
+    inc     ecx             ; increment counter 
+    jmp     copyLoop        ; continue with chars 
 
 ; *****************************************************************************
 ; *****************************************************************************
@@ -68,27 +99,27 @@ copyLoop:
 ; *****************************************************************************
 findHostLoopStart:
 ; get host name by copying it into a buffer until we find either the end of the file or a "/"
-	xor 	ecx, ecx 			; counter back to zero
-	add 	ecx, 7              ; need to skip the http://
+    xor     ecx, ecx        ; counter back to zero
+    add     ecx, 7          ; need to skip the http://
 
 findHostLoop:
-	cmp     ecx, dword [length] ; check if count is at length
-    je	 	fileCreateOpenA			; somewhere when done copying
+cmp     ecx, dword [length]         ; check if count is at length
+    je      fileCreateOpenA         ; somewhere when done copying
 
-    mov 	al, byte [esi + ecx]		; al has the char  
-    cmp 	byte al, 0x2F				; check for /
-    je 		slash 					; jump if found 
-    mov 	byte [hostName + ecx - 7], al 	; char being moved to hostName 
+    mov     al, byte [esi + ecx]        ; al has the char  
+    cmp     byte al, 0x2F               ; check for /
+    je      slash                           ; jump if found 
+    mov     byte [hostName + ecx - 7], al   ; char being moved to hostName 
 
-    inc 	ecx					; increment counter 
-    jmp 	findHostLoop 			; continue with chars 
+    inc     ecx                 ; increment counter 
+    jmp     findHostLoop        ; continue with chars 
 
 slash:
 ;check to see if the last character is a "/", if the last char is "/", then we are done parsing URL
-	mov 	ebx, [length]			; length in ebx 
-	dec 	ebx         			; check if at end of argv[1]
-	cmp 	ebx, ecx
-    je 		fileCreateOpenA 
+    mov     ebx, [length]           ; length in ebx 
+    dec     ebx                     ; check if at end of argv[1]
+    cmp     ebx, ecx
+    je      fileCreateOpenA 
 
 hostNameLength:
 ; if there is something after the slash after the host name, we must extract it
@@ -114,15 +145,15 @@ hostNameLength:
 
 
 fullPathLoop:
-	cmp     ecx, dword [length] ; are we at the end?
-    je	 	filenameshort	
+    cmp     ecx, dword [length] ; are we at the end?
+    je      filenameshort   
 
- 	mov 	al, byte [esi + ecx]		   ; if not, copy the next byte of the whole URL into al  
-    mov 	byte [fullPath + edx], al 	   ; move it to fullPath
+    mov     al, byte [esi + ecx]           ; if not, copy the next byte of the whole URL into al  
+    mov     byte [fullPath + edx], al      ; move it to fullPath
 
-   	inc 	ecx					             ; increment counter
+    inc     ecx                              ; increment counter
     inc     edx 
-    jmp 	fullPathLoop 			         ; continue copying
+    jmp     fullPathLoop                     ; continue copying
 
 
 filenameshort:
@@ -135,10 +166,10 @@ filenameshort:
 
     mov dword [fullPathLen], eax 
 
-	dec 	edx 								; get to last char
-	mov 	al, byte [fullPath + edx]		; al has the char  
-    cmp 	byte al, 0x2F						; check for /
-    je 		fileCreateOpenB 								; jump if found
+    dec     edx                             ; get to last char
+    mov     al, byte [fullPath + edx]       ; al has the char  
+    cmp     byte al, 0x2F                   ; check for /
+    je      fileCreateOpenB                 ; jump if found
 
 ; if the last character is a slash, then we dont have a fileName, we only have a pathName
 ; if we don't have a slash then we have to find the file name
@@ -146,7 +177,8 @@ filenameshort:
 
     xor     ebx, ebx
 
-    ; ebx is empty, ecx points at the end of the full path in the URL, edx is a counter at the end of fullPath pointing at the last char before NULL
+; ebx is empty, ecx points at the end of the full path in the URL, 
+; edx is a counter at the end of fullPath pointing at the last char before NULL
 
 reverseFileLoop:
 ;work backwards until we find a / since that will be the file name
@@ -587,7 +619,7 @@ section .bss    ; section declaration
 
 count:              resd 1 ; counter
 longURL:            resb 1024 ; full url length 
-hostName:           resb 512	; host name makestr
+hostName:           resb 512    ; host name makestr
 hostNameLen:        resd 1 ; length of host name
 fullPath:           resb 512 ; path to file
 fullPathLen:        resd 1 
