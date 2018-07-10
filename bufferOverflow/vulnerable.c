@@ -80,14 +80,14 @@ int main(int argc, char** argv) {
      int n;
     //some error catching for the user input if no port provided
      if (argc < 2) {
-         fprintf(stderr,"ERROR, no port provided\n");
+         printf("ERROR, no port provided\n");
          exit(1);
      }
      //open socket
      sockfd = socket(AF_INET, SOCK_STREAM, 0);
      if (sockfd < 0)
      { 
-        fprintf("Failed opening socket");
+        printf("Failed opening socket");
      }
      //zero out serv_addr
      bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -100,22 +100,26 @@ int main(int argc, char** argv) {
      //bind socket
      if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) 
      {
-              fprintf("Failed to bind");
+              printf("Failed to bind");
      }
     //listen on socket
      listen(sockfd,5);
      clilen = sizeof(cli_addr);
      newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
      
-     if (newsockfd < 0) 
-          error("ERROR on accept");
+     if (newsockfd < 0)
+	{ 
+          printf("ERROR on accept");
+	}
      //zero out the buffer we read into
      bzero(buffer,256);
      //this read only reads 255 bytes into the buffer
      n = read(newsockfd,buffer,255);
      //if n is negative then we encounter erroor
-     if (n < 0) error("ERROR reading from socket");
-     
+     if (n < 0)
+	{
+         printf("ERROR reading from socket");
+     	}
      //if read is successful, n is number of bytes read 
      //print the message and copy it into smaller buffer using vulnerable_function
      if (n>0)
@@ -126,7 +130,7 @@ int main(int argc, char** argv) {
 
     //send a message to sender saying we received message 
      n = write(newsockfd,"I got your message\n",18);
-     if (n < 0) error("ERROR writing to socket");
+     if (n < 0) printf("ERROR writing to socket");
 
 
     return 0;
