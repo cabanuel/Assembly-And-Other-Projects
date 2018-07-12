@@ -59,7 +59,8 @@ void not_called() {
     // system("/bin/bash");
 }
 
-void vulnerable_function(char* string) {
+void vulnerable_function(char* string) 
+{
     //this is the vulnerable function we are going to exploit. We will write
     //more than 100 characters into string and overflow the buffer. This 
     //happens because strcpy does not keep track of how many bytes it copies, 
@@ -71,7 +72,8 @@ void vulnerable_function(char* string) {
 }
 
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) 
+{
     //create the socket file descriptors and portnumber
      int sockfd, newsockfd, portno, clilen;
     //buffer we are going to copy our message into

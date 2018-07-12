@@ -7,7 +7,8 @@ In this situation we assume that we either built the program ourselves and have 
 The program is just designed to open a socket, listen for a message, read it into a buffer, print it, copy it to a smaller buffer, and close the connection. The problem lies on the fact that in the aptly named "vulnearble_function", the message is copied into a buffer that is smaller ### AND is copied with the function "strcpy":
 
 ```C
-void vulnerable_function(char* string) {
+void vulnerable_function(char* string) 
+{
     //this is the vulnerable function we are going to exploit. We will write
     //more than 100 characters into string and overflow the buffer. This 
     //happens because strcpy does not keep track of how many bytes it copies, 
@@ -20,7 +21,7 @@ void vulnerable_function(char* string) {
 ```
 
 The program is compiled with:
-
-### gcc -m32 vulnerable.c -fno-stack-protector -o vulnerable
-
+```
+gcc -m32 vulnerable.c -fno-stack-protector -o vulnerable
+```
 which 
