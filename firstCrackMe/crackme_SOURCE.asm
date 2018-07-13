@@ -16,9 +16,8 @@ main:
     call flipit
     call reverseit
 
-
-
-    call exit
+    call checkit
+    call success
 
 exit:
     mov eax, 5
@@ -27,6 +26,40 @@ exit:
     call output
     mov eax, 0x01
     int 0x80
+    ret
+
+checkit:
+    push ebp
+    mov ebp, esp
+
+    xor ecx, ecx
+    cmp byte[input+ecx], 0x76
+    jne wrong
+    inc ecx
+    cmp byte[input+ecx], 0x59
+    jne wrong
+    inc ecx
+    cmp byte[input+ecx], 0x72
+    jne wrong
+    inc ecx
+    cmp byte[input+ecx], 0x67
+    jne wrong
+    inc ecx
+    cmp byte[input+ecx], 0x7d
+    jne wrong
+    inc ecx
+    cmp byte[input+ecx], 0x89
+    jne wrong
+    inc ecx
+    cmp byte[input+ecx], 0x98
+    jne wrong
+    inc ecx
+    cmp byte[input+ecx], 0x86
+    jne wrong
+
+    mov esp, ebp
+    pop ebp
+    ret
 
 reverseit:
     push ebp
@@ -38,14 +71,15 @@ reverseit:
     xor edx, edx
 
 reverseitloop:
-    mov al, byte[buffer + edx]
-    mov ah, byte[buffer + ecx]
-    mov byte[buffer + edx], ah
-    mov byte[buffer + ecx], al
+    mov al, byte[input + edx]
+    mov ah, byte[input + ecx]
+    mov byte[input + edx], ah
+    mov byte[input + ecx], al
     dec ecx
     inc edx
     cmp edx, 3
     jg reverseitdone
+    jmp reverseitloop
 
 reverseitdone:
     mov esp, ebp
@@ -57,21 +91,21 @@ workit:
     mov ebp, esp
 
     xor ecx, ecx
-    add byte[buffer+ecx], 0x31
+    add byte[input+ecx], 0x31
     inc ecx
-    add byte[buffer+ecx], 0x33
+    add byte[input+ecx], 0x33
     inc ecx
-    add byte[buffer+ecx], 0x33
+    add byte[input+ecx], 0x33
     inc ecx
-    add byte[buffer+ecx], 0x37
+    add byte[input+ecx], 0x37
     inc ecx
-    add byte[buffer+ecx], 0x48
+    add byte[input+ecx], 0x48
     inc ecx
-    add byte[buffer+ecx], 0x41
+    add byte[input+ecx], 0x41
     inc ecx
-    add byte[buffer+ecx], 0x58
+    add byte[input+ecx], 0x58
     inc ecx
-    add byte[buffer+ecx], 0x52
+    add byte[input+ecx], 0x52
 
     mov esp, ebp
     pop ebp
@@ -82,9 +116,9 @@ flipit:
     mov ebp, esp
     xor ecx,ecx
 flipitinternal:
-    mov al, byte[buffer+ecx]
+    mov al, byte[input+ecx]
     not al
-    mov byte[buffer+ecx],al
+    mov byte[input+ecx],al
     inc ecx
     cmp ecx,8
     jl flipitinternal
@@ -96,6 +130,13 @@ flipitinternal:
 wrong:
     mov eax, 7
     push msg2
+    push eax
+    call output
+    call exit
+
+success:
+    mov eax, 9
+    push msg3
     push eax
     call output
     call exit
@@ -134,7 +175,7 @@ readsubroutine:
 
     inc dword[lenstr]
     mov bl, byte[charbuf]
-    mov edx, buffer
+    mov edx, input
     mov [edx+ecx],bl
     jmp readsubroutine
 
@@ -163,10 +204,12 @@ output:
 section .data
 msg1 db "Input Passcode:",0x0A,0
 msg2 db "WRONG!",0x0A,0
-msg3 db "Correct!\n",0
+msg3 db "Correct!",0x0A,0
 msg4 db "EXIT",0x0A,0
 
+
+
 section .bss
-buffer:  resb 256
 lenstr:  resd 1
 charbuf: resb 1
+input:  resb 256

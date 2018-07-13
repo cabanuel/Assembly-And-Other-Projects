@@ -1,6 +1,6 @@
 # Buffer Overflow and Returning to a Function
 
-This is a brief demo of a buffer overflow on a compiled program that has no canaries (that's to come in a different project!). For this binary, ASLE is not turned off, and we are assuming that this program has an uncalled function that does in fact do a system call on /bin/sh, and that there is a function we can exploit in the program. (More details in the comments of vulnerable.c)
+This is a brief demo of a buffer overflow on a compiled program that has no canaries (that's to come in a different project!). For this binary, ASLR is not turned off, and we are assuming that this program has an uncalled function that does in fact do a system call on /bin/sh, and that there is a function we can exploit in the program. (More details in the comments of vulnerable.c)
 
 In this situation we assume that we either built the program ourselves and have sudo privileges to run it (if that were the case we would've just spawned a shell ourselves but that's no fun), or we were given this program by our IT department to do our work, but it turns out that they wrote a vulnerability that we exploited to elevate our privileges (which is more plausible).
 
@@ -24,4 +24,12 @@ The program is compiled with:
 ```
 gcc -m32 vulnerable.c -fno-stack-protector -o vulnerable
 ```
-which 
+And run with:
+```
+./vulnerable <PORT NUMBER>
+```
+As explained, strcpy is dangerous and allows us to write more bytes than the size of the buffer!
+
+So what does this mean?
+
+While we could write some shellcode to arbitrarily execute code that we push onto the stack, for this case we are going to overwrite the return address
