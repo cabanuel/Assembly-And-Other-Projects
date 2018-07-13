@@ -1,3 +1,3 @@
 all:
 	nasm -f elf32 -g crackme_SOURCE.asm
-	gcc -g -o firstCrackMe -m32 crackme_SOURCE.o
+	ld -m elf_i386 -o firstCrackMe crackme_SOURCE.o

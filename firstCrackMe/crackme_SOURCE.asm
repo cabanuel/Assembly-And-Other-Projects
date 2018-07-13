@@ -1,8 +1,8 @@
 bits 32
 section .text
-global main
+global _start
 
-main:
+_start:
     mov eax, 16
     push msg1
     push eax
