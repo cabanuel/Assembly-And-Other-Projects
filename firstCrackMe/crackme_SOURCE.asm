@@ -172,7 +172,8 @@ readsubroutine:
     cmp byte[charbuf], 0x0
     je readingdone
     mov ecx, dword[lenstr]
-
+    cmp ecx, 255
+    jge wrong
     inc dword[lenstr]
     mov bl, byte[charbuf]
     mov edx, input
