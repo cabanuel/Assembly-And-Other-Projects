@@ -34,7 +34,5 @@ This function is never called by main! So figure out how to get that flag!
 ## Solution:
 
 Again I have added a directory with the solution write up in the **solution** directory.
-You can also find a solution hint [HERE] (https://bit.ly/1e1EYJv
-
-)
+You can also find a solution hint [HERE](https://bit.ly/1e1EYJv)
 
