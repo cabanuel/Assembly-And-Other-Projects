@@ -17,9 +17,7 @@ http://www.nuclearfarmboy.com/ctf2019
 
 There are 3 categories. 
 
-**Reverse Engineering**
-**Linux**
-**Binary Exploit**
+**Reverse Engineering || Linux || Binary Exploit**
 
 Each category will have 4 challenges ranging from super easy (worth 1 point) to more challenging (worth 4 points)
 
