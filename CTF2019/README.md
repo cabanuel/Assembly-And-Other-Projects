@@ -17,9 +17,9 @@ http://www.nuclearfarmboy.com/ctf2019
 
 There are 3 categories. 
 
-** Reverse Engineering **
-** Linux **
-** Binary Exploit **
+**Reverse Engineering**
+**Linux**
+**Binary Exploit**
 
 Each category will have 4 challenges ranging from super easy (worth 1 point) to more challenging (worth 4 points)
 
@@ -31,7 +31,7 @@ Solve all the problems. First one to solve them all wins!
 
 Alternatively, we will see who has the most points one week after posting, and declare them the Winner, first person to solve them all after that will be colloquially and unironically referred to as **Champ**.
 
-#FAQs
+# FAQs
 
 ### Why are you guys doing this?
 Because we want to help y'all get more comfortable with CTFs and we are nerds that like writing this stuff. 
