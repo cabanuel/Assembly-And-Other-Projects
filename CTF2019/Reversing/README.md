@@ -1,6 +1,6 @@
 # Reverse Engineering
 
-These challenges focus on you figuring out how stuff works. They go from easy to not so easy.
+These challenges focus on you figuring out how stuff works. They go from easy to not so easy. (All challenges written by NuclearFarmboy)
 
 ### REVERSE1: Get Crackin!  
 Here's a python code that we wrote to verify your bank pin. Can you solve for the pin?
